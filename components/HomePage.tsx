@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import {
   G,
@@ -96,9 +95,53 @@ export function HomePage({
 
   return (
     <>
+      {/* ── RESPONSIVE OVERRIDES ──────────────────────────────────────────
+          Self-contained mobile fixes. Inline styles normally beat external
+          stylesheet rules, so these use !important specifically where an
+          inline style needs to be overridden at smaller breakpoints
+          (the asymmetric hero grid, the hero min-height, the page-header
+          rows that mix a heading with a right-aligned caption). Everything
+          else (card grids, two-column sections, paddings, gaps, type) is
+          fixed at the inline-style level using clamp()/auto-fit so it just
+          works without relying on any external CSS at all. ── */}
+      <style>{`
+        @media (max-width: 1024px) {
+          .hero-grid {
+            grid-template-columns: 1fr !important;
+            gap: 2.5rem !important;
+          }
+        }
+        @media (max-width: 768px) {
+          .hero-section {
+            min-height: auto !important;
+            padding-top: 2rem !important;
+            padding-bottom: 1rem !important;
+          }
+          .page-header-row {
+            flex-direction: column !important;
+            align-items: flex-start !important;
+            gap: 1rem !important;
+          }
+          .page-header-row > p {
+            text-align: left !important;
+            max-width: none !important;
+          }
+        }
+        @media (max-width: 560px) {
+          .hero-stats-row {
+            gap: 1.25rem !important;
+          }
+          .footer-bottom-row {
+            flex-direction: column !important;
+            align-items: flex-start !important;
+            text-align: left !important;
+          }
+        }
+      `}</style>
+
 {/* ── HERO ── */}
 <section className="grid-bg hero-section" style={{
-  padding: "0 2rem",
+  padding: "0 clamp(1.1rem, 4vw, 2rem)",
   minHeight: "95vh",
   display: "flex",
   alignItems: "center",
@@ -108,20 +151,20 @@ export function HomePage({
     maxWidth: "1240px",
     margin: "0 auto",
     width: "100%",
-    paddingTop: "3rem",
-    paddingBottom: "3rem",
+    paddingTop: "clamp(2rem, 6vw, 3rem)",
+    paddingBottom: "clamp(2rem, 6vw, 3rem)",
   }}>
 
     {/* Hero image with real image and fallback */}
     <div style={{
       width: "100%",
       maxWidth: "860px",
-      height: "clamp(220px, 38vw, 460px)",
+      height: "clamp(200px, 38vw, 460px)",
       borderRadius: "20px",
       overflow: "hidden",
       border: `1px solid ${G.border}`,
       boxShadow: "0 16px 48px rgba(15,23,42,0.12)",
-      margin: "0 auto 3.5rem",
+      margin: "0 auto clamp(2rem, 6vw, 3.5rem)",
       position: "relative",
       background: "linear-gradient(135deg, #14532D 0%, #166534 45%, #15803d 100%)",
     }}>
@@ -216,6 +259,7 @@ export function HomePage({
         borderRadius: "100px",
         padding: "6px 16px",
         zIndex: 5,
+        maxWidth: "calc(100% - 2.5rem)",
       }}>
         <div style={{
           width: 7,
@@ -223,13 +267,17 @@ export function HomePage({
           borderRadius: "50%",
           backgroundColor: "#4ADE80",
           animation: "pulse 2s infinite",
+          flexShrink: 0,
         }} />
         <span style={{
-          fontSize: "0.7rem",
+          fontSize: "clamp(0.6rem, 1.6vw, 0.7rem)",
           fontWeight: 700,
           color: "#fff",
           letterSpacing: "0.07em",
           fontFamily: "'Inter', sans-serif",
+          whiteSpace: "nowrap",
+          overflow: "hidden",
+          textOverflow: "ellipsis",
         }}>
           LIVE SUNDAYS · 9 AM &amp; 11 AM
         </span>
@@ -239,7 +287,7 @@ export function HomePage({
     <div className="hero-grid" style={{
       display: "grid",
       gridTemplateColumns: "1fr 420px",
-      gap: "5rem",
+      gap: "clamp(2rem, 6vw, 5rem)",
       alignItems: "start",
     }}>
       {/* Left: headline + CTAs */}
@@ -425,7 +473,7 @@ export function HomePage({
       </div>
 
       {/* Right widgets */}
-      <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+      <div style={{ display: "flex", flexDirection: "column", gap: "1rem", minWidth: 0 }}>
         {/* Verse of the day */}
         <div style={{
           backgroundColor: G.white,
@@ -451,8 +499,9 @@ export function HomePage({
             alignItems: "center",
             justifyContent: "space-between",
             marginBottom: "1rem",
+            gap: "0.5rem",
           }}>
-            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "8px", minWidth: 0 }}>
               <div style={{
                 width: "30px",
                 height: "30px",
@@ -461,6 +510,7 @@ export function HomePage({
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
+                flexShrink: 0,
               }}>
                 <i className="ti ti-book-2" style={{ fontSize: "15px", color: G.green }} aria-hidden="true" />
               </div>
@@ -471,6 +521,7 @@ export function HomePage({
                 textTransform: "uppercase",
                 letterSpacing: "0.12em",
                 fontFamily: "'Inter', sans-serif",
+                whiteSpace: "nowrap",
               }}>
                 Verse of the Day
               </span>
@@ -479,6 +530,7 @@ export function HomePage({
               fontSize: "0.7rem",
               color: G.hint,
               fontFamily: "'Inter', sans-serif",
+              flexShrink: 0,
             }}>
               June 21
             </span>
@@ -554,8 +606,9 @@ export function HomePage({
             alignItems: "center",
             justifyContent: "space-between",
             marginBottom: "1rem",
+            gap: "0.5rem",
           }}>
-            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "8px", minWidth: 0 }}>
               <div style={{
                 width: "30px",
                 height: "30px",
@@ -564,6 +617,7 @@ export function HomePage({
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
+                flexShrink: 0,
               }}>
                 <i className="ti ti-calendar-today" style={{ fontSize: "15px", color: G.blue }} aria-hidden="true" />
               </div>
@@ -572,6 +626,7 @@ export function HomePage({
                 fontWeight: 700,
                 color: G.ink,
                 fontFamily: "'Inter', sans-serif",
+                whiteSpace: "nowrap",
               }}>
                 Today's Schedule
               </span>
@@ -585,6 +640,7 @@ export function HomePage({
               borderRadius: "100px",
               border: `1px solid ${G.greenBorder}`,
               fontFamily: "'Inter', sans-serif",
+              flexShrink: 0,
             }}>
               Sunday
             </span>
@@ -605,7 +661,7 @@ export function HomePage({
                 fontSize: "0.7rem",
                 fontWeight: 700,
                 color: G.green,
-                minWidth: "60px",
+                minWidth: "56px",
                 fontFamily: "'Inter', sans-serif",
               }}>
                 {s.time}
@@ -616,6 +672,7 @@ export function HomePage({
                 flex: 1,
                 fontWeight: 500,
                 fontFamily: "'Inter', sans-serif",
+                minWidth: 0,
               }}>
                 {s.title}
               </span>
@@ -646,7 +703,7 @@ export function HomePage({
         </div>
 
         {/* Quick stats */}
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "0.85rem" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(130px, 1fr))", gap: "0.85rem" }}>
           {[
             { val: "40+", label: "Years of Ministry", icon: "ti-building-church" },
             { val: "1,200+", label: "Church Members", icon: "ti-users" },
@@ -707,17 +764,17 @@ export function HomePage({
 
 
       {/* ── PROGRAMS ── */}
-      <section style={{ backgroundColor: G.surface, padding: "6rem 2.5rem", borderTop: `1px solid ${G.border}` }}>
+      <section style={{ backgroundColor: G.surface, padding: "clamp(3rem, 8vw, 6rem) clamp(1.1rem, 5vw, 2.5rem)", borderTop: `1px solid ${G.border}` }}>
         <div style={{ maxWidth: "1240px", margin: "0 auto" }}>
-          <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", marginBottom: "3rem" }}>
+          <div className="page-header-row" style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", marginBottom: "clamp(2rem, 5vw, 3rem)", gap: "1rem" }}>
             <div>
               <p className="tag" style={{ margin: "0 0 0.75rem" }}>Get Involved</p>
               <div style={{ width: "28px", height: "2px", backgroundColor: G.green, marginBottom: "1.25rem", borderRadius: "2px" }} />
-              <h2 className="display" style={{ fontSize: "2.4rem", fontWeight: 700, color: G.ink, letterSpacing: "-0.03em", margin: 0 }}>Programs &amp; Ministries</h2>
+              <h2 className="display" style={{ fontSize: "clamp(1.7rem, 5vw, 2.4rem)", fontWeight: 700, color: G.ink, letterSpacing: "-0.03em", margin: 0 }}>Programs &amp; Ministries</h2>
             </div>
             <p style={{ fontSize: "0.84rem", color: G.muted, maxWidth: "200px", textAlign: "right", lineHeight: 1.7, margin: 0 }}>Click any card to explore and register.</p>
           </div>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: "1.25rem" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: "1.25rem" }}>
             {PROGRAMS.map(p => (
               <div key={p.title} className="card-lift" onClick={() => setModal({ type: "program", data: p })}
                 style={{ backgroundColor: G.white, borderRadius: "16px", border: `1px solid ${G.border}`, overflow: "hidden", boxShadow: "0 1px 6px rgba(0,0,0,0.04)", position: "relative", cursor: "pointer" }}>
@@ -750,17 +807,17 @@ export function HomePage({
       </section>
 
       {/* ── PRAYER BOARD ── */}
-      <section style={{ backgroundColor: G.white, padding: "6rem 2.5rem", borderTop: `1px solid ${G.border}` }}>
+      <section style={{ backgroundColor: G.white, padding: "clamp(3rem, 8vw, 6rem) clamp(1.1rem, 5vw, 2.5rem)", borderTop: `1px solid ${G.border}` }}>
         <div style={{ maxWidth: "1240px", margin: "0 auto" }}>
-          <div style={{ textAlign: "center", marginBottom: "3rem" }}>
+          <div style={{ textAlign: "center", marginBottom: "clamp(2rem, 5vw, 3rem)" }}>
             <p className="tag" style={{ margin: "0 0 0.75rem" }}>Community Prayer</p>
             <div style={{ display: "flex", justifyContent: "center" }}>
               <div style={{ width: "28px", height: "2px", backgroundColor: G.green, marginBottom: "1.25rem", borderRadius: "2px" }} />
             </div>
-            <h2 className="display" style={{ fontSize: "2.4rem", fontWeight: 700, color: G.ink, letterSpacing: "-0.03em", margin: "0 0 0.75rem" }}>Prayer Board</h2>
+            <h2 className="display" style={{ fontSize: "clamp(1.7rem, 5vw, 2.4rem)", fontWeight: 700, color: G.ink, letterSpacing: "-0.03em", margin: "0 0 0.75rem" }}>Prayer Board</h2>
             <p style={{ fontSize: "0.9rem", color: G.muted, maxWidth: "420px", margin: "0 auto" }}>Post a prayer request or praise report. The church family is standing with you.</p>
           </div>
-          <div style={{ backgroundColor: G.surface, border: `1px solid ${G.border}`, borderRadius: "16px", padding: "1.5rem", maxWidth: "680px", margin: "0 auto 2.5rem" }}>
+          <div style={{ backgroundColor: G.surface, border: `1px solid ${G.border}`, borderRadius: "16px", padding: "1.5rem", maxWidth: "680px", margin: "0 auto clamp(1.75rem, 5vw, 2.5rem)" }}>
             <div style={{ display: "flex", gap: "10px", alignItems: "center", marginBottom: "1rem" }}>
               <div style={{ width: "40px", height: "40px", borderRadius: "50%", backgroundColor: user ? G.greenLight : G.surface, border: `1px solid ${G.greenBorder}`, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, fontSize: "0.78rem", color: G.green, flexShrink: 0 }}>
                 {user?.avatar || <i className="ti ti-user" style={{ fontSize: "18px", color: G.hint }} aria-hidden="true" />}
@@ -768,30 +825,30 @@ export function HomePage({
               <textarea value={newPrayer} onChange={e => setNewPrayer(e.target.value)}
                 placeholder={user ? "Share a prayer request or praise report..." : "Sign in to post a prayer request..."}
                 rows={3} disabled={!user} className="input-field"
-                style={{ flex: 1, padding: "0.78rem 1rem", border: `1px solid ${G.border}`, borderRadius: "10px", fontSize: "0.87rem", color: G.ink, fontFamily: "inherit", backgroundColor: G.white, resize: "none" }} />
+                style={{ flex: 1, minWidth: 0, padding: "0.78rem 1rem", border: `1px solid ${G.border}`, borderRadius: "10px", fontSize: "0.87rem", color: G.ink, fontFamily: "inherit", backgroundColor: G.white, resize: "none" }} />
             </div>
-            <div style={{ display: "flex", gap: "0.65rem", alignItems: "center" }}>
+            <div style={{ display: "flex", gap: "0.65rem", alignItems: "center", flexWrap: "wrap" }}>
               <select value={newPrayerCat} onChange={e => setNewPrayerCat(e.target.value)} disabled={!user} className="input-field"
                 style={{ padding: "0.55rem 0.85rem", border: `1px solid ${G.border}`, borderRadius: "8px", fontSize: "0.78rem", color: G.body, fontFamily: "inherit", backgroundColor: G.white }}>
                 {["Prayer","Healing","Gratitude","Community","Marriage","Finances","Guidance"].map(c => <option key={c}>{c}</option>)}
               </select>
               <button onClick={user ? submitPrayer : () => setLoginOpen(true)} className="btn-green"
-                style={{ marginLeft: "auto", backgroundColor: G.green, color: "#fff", border: "none", borderRadius: "9px", padding: "0.6rem 1.4rem", fontSize: "0.82rem", fontWeight: 700, cursor: "pointer", fontFamily: "inherit", display: "flex", alignItems: "center", gap: "6px" }}>
+                style={{ marginLeft: "auto", backgroundColor: G.green, color: "#fff", border: "none", borderRadius: "9px", padding: "0.6rem 1.4rem", fontSize: "0.82rem", fontWeight: 700, cursor: "pointer", fontFamily: "inherit", display: "flex", alignItems: "center", gap: "6px", whiteSpace: "nowrap" }}>
                 <i className="ti ti-send" style={{ fontSize: "13px" }} aria-hidden="true" />
                 {user ? "Post Prayer" : "Sign In to Post"}
               </button>
             </div>
           </div>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(2,1fr)", gap: "1.25rem" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "1.25rem" }}>
             {prayerBoard.map(p => (
               <div key={p.id} style={{ backgroundColor: G.white, border: `1px solid ${G.border}`, borderRadius: "14px", padding: "1.4rem", boxShadow: "0 1px 6px rgba(0,0,0,0.04)" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "0.9rem" }}>
                   <div style={{ width: "40px", height: "40px", borderRadius: "50%", backgroundColor: p.color + "20", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, fontSize: "0.78rem", color: p.color, flexShrink: 0 }}>{p.avatar}</div>
-                  <div style={{ flex: 1 }}>
+                  <div style={{ flex: 1, minWidth: 0 }}>
                     <p style={{ fontSize: "0.83rem", fontWeight: 700, color: G.ink, margin: "0 0 2px" }}>{p.name}</p>
                     <p style={{ fontSize: "0.7rem", color: G.hint, margin: 0 }}>{p.time}</p>
                   </div>
-                  <span style={{ fontSize: "0.65rem", fontWeight: 700, color: p.color, backgroundColor: p.color + "15", padding: "3px 10px", borderRadius: "100px", border: `1px solid ${p.color}33` }}>{p.category}</span>
+                  <span style={{ fontSize: "0.65rem", fontWeight: 700, color: p.color, backgroundColor: p.color + "15", padding: "3px 10px", borderRadius: "100px", border: `1px solid ${p.color}33`, flexShrink: 0 }}>{p.category}</span>
                 </div>
                 <p style={{ fontSize: "0.87rem", lineHeight: 1.8, color: G.body, margin: "0 0 1rem" }}>{p.text}</p>
                 <div style={{ display: "flex", alignItems: "center", gap: "10px", paddingTop: "0.85rem", borderTop: `1px solid ${G.borderLight}` }}>
@@ -808,20 +865,20 @@ export function HomePage({
       </section>
 
       {/* ── EVENTS + BLOG ── */}
-      <section className="grid-bg" style={{ padding: "6rem 2.5rem", borderTop: `1px solid ${G.border}` }}>
-        <div style={{ maxWidth: "1240px", margin: "0 auto", display: "grid", gridTemplateColumns: "1fr 1fr", gap: "6rem", alignItems: "start" }}>
+      <section className="grid-bg" style={{ padding: "clamp(3rem, 8vw, 6rem) clamp(1.1rem, 5vw, 2.5rem)", borderTop: `1px solid ${G.border}` }}>
+        <div style={{ maxWidth: "1240px", margin: "0 auto", display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: "clamp(2.5rem, 6vw, 6rem)", alignItems: "start" }}>
           <div>
             <p className="tag" style={{ margin: "0 0 0.75rem" }}>Mark Your Calendar</p>
             <div style={{ width: "28px", height: "2px", backgroundColor: G.green, marginBottom: "1.25rem", borderRadius: "2px" }} />
-            <h2 className="display" style={{ fontSize: "2.4rem", fontWeight: 700, color: G.ink, letterSpacing: "-0.03em", margin: "0 0 2.5rem" }}>Upcoming Events</h2>
+            <h2 className="display" style={{ fontSize: "clamp(1.7rem, 5vw, 2.4rem)", fontWeight: 700, color: G.ink, letterSpacing: "-0.03em", margin: "0 0 clamp(1.5rem, 4vw, 2.5rem)" }}>Upcoming Events</h2>
             <div style={{ display: "flex", flexDirection: "column" }}>
               {EVENTS.map(ev => (
-                <div key={ev.title} className="event-row" style={{ display: "grid", gridTemplateColumns: "62px 1fr", gap: "1rem", borderBottom: `1px solid ${G.borderLight}`, alignItems: "start" }}>
+                <div key={ev.title} className="event-row" style={{ display: "grid", gridTemplateColumns: "56px 1fr", gap: "1rem", padding: "0.85rem 0", borderBottom: `1px solid ${G.borderLight}`, alignItems: "start" }}>
                   <div style={{ backgroundColor: G.greenLight, borderRadius: "10px", padding: "0.6rem 0.5rem", textAlign: "center", border: `1px solid ${G.greenBorder}` }}>
                     <p style={{ fontSize: "0.52rem", letterSpacing: "0.14em", textTransform: "uppercase", color: G.green, fontWeight: 700, margin: "0 0 2px" }}>{ev.month}</p>
                     <p className="display" style={{ fontSize: "1.25rem", fontWeight: 700, color: G.green, lineHeight: 1, margin: 0 }}>{ev.day}</p>
                   </div>
-                  <div style={{ paddingTop: "2px" }}>
+                  <div style={{ paddingTop: "2px", minWidth: 0 }}>
                     <p style={{ fontSize: "0.86rem", fontWeight: 700, color: G.ink, margin: "0 0 3px" }}>{ev.title}</p>
                     <p style={{ fontSize: "0.73rem", color: G.muted, margin: "0 0 4px", display: "flex", alignItems: "center", gap: "4px" }}>
                       <i className="ti ti-map-pin" style={{ fontSize: "11px" }} aria-hidden="true" />{ev.detail}
@@ -839,7 +896,7 @@ export function HomePage({
           <div>
             <p className="tag" style={{ margin: "0 0 0.75rem" }}>From Our Blog</p>
             <div style={{ width: "28px", height: "2px", backgroundColor: G.green, marginBottom: "1.25rem", borderRadius: "2px" }} />
-            <h2 className="display" style={{ fontSize: "2.4rem", fontWeight: 700, color: G.ink, letterSpacing: "-0.03em", margin: "0 0 2rem" }}>Latest Writings</h2>
+            <h2 className="display" style={{ fontSize: "clamp(1.7rem, 5vw, 2.4rem)", fontWeight: 700, color: G.ink, letterSpacing: "-0.03em", margin: "0 0 clamp(1.25rem, 4vw, 2rem)" }}>Latest Writings</h2>
             <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
               {BLOG_POSTS.slice(0, 3).map(b => (
                 <div key={b.id} className="card-lift" onClick={() => { setPage("blog"); setBlogModal(b); }}
@@ -863,16 +920,16 @@ export function HomePage({
       </section>
 
       {/* ── LEADERSHIP ── */}
-      <section style={{ backgroundColor: G.white, padding: "6rem 2.5rem", borderTop: `1px solid ${G.border}` }}>
+      <section style={{ backgroundColor: G.white, padding: "clamp(3rem, 8vw, 6rem) clamp(1.1rem, 5vw, 2.5rem)", borderTop: `1px solid ${G.border}` }}>
         <div style={{ maxWidth: "1240px", margin: "0 auto" }}>
-          <div style={{ textAlign: "center", marginBottom: "3rem" }}>
+          <div style={{ textAlign: "center", marginBottom: "clamp(2rem, 5vw, 3rem)" }}>
             <p className="tag" style={{ margin: "0 0 0.75rem" }}>Our Team</p>
             <div style={{ display: "flex", justifyContent: "center" }}>
               <div style={{ width: "28px", height: "2px", backgroundColor: G.green, marginBottom: "1.25rem", borderRadius: "2px" }} />
             </div>
-            <h2 className="display" style={{ fontSize: "2.4rem", fontWeight: 700, color: G.ink, letterSpacing: "-0.03em", margin: 0 }}>Meet the Leadership</h2>
+            <h2 className="display" style={{ fontSize: "clamp(1.7rem, 5vw, 2.4rem)", fontWeight: 700, color: G.ink, letterSpacing: "-0.03em", margin: 0 }}>Meet the Leadership</h2>
           </div>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: "1.75rem" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: "1.75rem" }}>
             {TEAM.map(t => (
               <div key={t.name} className="card-lift" onClick={() => setModal({ type: "team", data: t })}
                 style={{ backgroundColor: G.white, borderRadius: "16px", border: `1px solid ${G.border}`, overflow: "hidden", boxShadow: "0 1px 6px rgba(0,0,0,0.04)", textAlign: "center", cursor: "pointer" }}>
@@ -898,16 +955,16 @@ export function HomePage({
       </section>
 
       {/* ── TESTIMONIALS ── */}
-      <section className="grid-bg" style={{ padding: "6rem 2.5rem", borderTop: `1px solid ${G.border}` }}>
+      <section className="grid-bg" style={{ padding: "clamp(3rem, 8vw, 6rem) clamp(1.1rem, 5vw, 2.5rem)", borderTop: `1px solid ${G.border}` }}>
         <div style={{ maxWidth: "1240px", margin: "0 auto" }}>
-          <div style={{ textAlign: "center", marginBottom: "3rem" }}>
+          <div style={{ textAlign: "center", marginBottom: "clamp(2rem, 5vw, 3rem)" }}>
             <p className="tag" style={{ margin: "0 0 0.75rem" }}>Stories of Faith</p>
             <div style={{ display: "flex", justifyContent: "center" }}>
               <div style={{ width: "28px", height: "2px", backgroundColor: G.green, marginBottom: "1.25rem", borderRadius: "2px" }} />
             </div>
-            <h2 className="display" style={{ fontSize: "2.4rem", fontWeight: 700, color: G.ink, letterSpacing: "-0.03em", margin: 0 }}>From Our Community</h2>
+            <h2 className="display" style={{ fontSize: "clamp(1.7rem, 5vw, 2.4rem)", fontWeight: 700, color: G.ink, letterSpacing: "-0.03em", margin: 0 }}>From Our Community</h2>
           </div>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: "1.25rem" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: "1.25rem" }}>
             {[
               { name: "Abena Asante", role: "Member since 2018", quote: "Garmadu changed my life. I came broken and found a family. The community here is the most genuine I have ever encountered.", photoId: "photo-1573496359142-b8d87734a5a2" },
               { name: "Michael Darko", role: "Youth Ministry Leader", quote: "I grew up in this church and now I lead others. Pastor James has poured into me for years. The vision here is contagious.", photoId: "photo-1500648767791-00dcc994a43e" },
@@ -923,7 +980,7 @@ export function HomePage({
                     <UnsplashImg photoId={t.photoId} params="w=100&h=100&q=80&fit=crop&crop=face" alt={t.name}
                       style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                   </div>
-                  <div>
+                  <div style={{ minWidth: 0 }}>
                     <p style={{ fontSize: "0.86rem", fontWeight: 700, color: G.ink, margin: 0 }}>{t.name}</p>
                     <p style={{ fontSize: "0.72rem", color: G.muted, margin: 0 }}>{t.role}</p>
                   </div>
@@ -934,41 +991,16 @@ export function HomePage({
         </div>
       </section>
 
-      {/* ── GIVE CTA ── */}
-      <section style={{ backgroundColor: G.green, padding: "6rem 2.5rem" }}>
-        <div style={{ maxWidth: "1240px", margin: "0 auto", display: "grid", gridTemplateColumns: "1fr 1fr", gap: "6rem", alignItems: "center" }}>
-          <div>
-            <p style={{ fontSize: "0.62rem", letterSpacing: "0.2em", textTransform: "uppercase", color: "rgba(255,255,255,0.65)", fontWeight: 700, margin: "0 0 1rem" }}>Support the Mission</p>
-            <h2 className="display" style={{ fontSize: "2.5rem", fontWeight: 700, color: "#fff", letterSpacing: "-0.03em", margin: "0 0 1.5rem", lineHeight: 1.12 }}>Give Generously,<br />Change Lives</h2>
-            <p style={{ fontSize: "0.94rem", lineHeight: 2, color: "rgba(255,255,255,0.8)", margin: "0 0 2.5rem" }}>Your generosity fuels local outreach, youth programs, global missions, and the daily work of this church family. Every gift makes a real difference.</p>
-            <button onClick={() => showToast("Redirecting to secure giving portal...")}
-              style={{ display: "inline-flex", alignItems: "center", gap: "8px", backgroundColor: "#fff", color: G.green, padding: "0.8rem 1.9rem", borderRadius: "10px", fontSize: "0.86rem", fontWeight: 700, border: "none", cursor: "pointer", fontFamily: "inherit" }}>
-              <i className="ti ti-heart" style={{ fontSize: "14px" }} aria-hidden="true" /> Give Online
-            </button>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: "1rem", paddingTop: "2rem", marginTop: "2rem", borderTop: "1px solid rgba(255,255,255,0.15)" }}>
-              {[{ val: "$2.4M", label: "Given Last Year" },{ val: "65%", label: "Goes to Outreach" },{ val: "8", label: "Missions Partners" }].map(s => (
-                <div key={s.label}>
-                  <p className="display" style={{ fontSize: "1.55rem", fontWeight: 700, color: "#fff", margin: "0 0 4px" }}>{s.val}</p>
-                  <p style={{ fontSize: "0.67rem", letterSpacing: "0.1em", textTransform: "uppercase", color: "rgba(255,255,255,0.55)", fontWeight: 600, margin: 0 }}>{s.label}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-          <div style={{ borderRadius: "20px", overflow: "hidden", aspectRatio: "4/3" }}>
-            <UnsplashImg photoId="photo-1469571486292-0ba58a3f068b" params="w=900&q=85" alt="Community outreach"
-              style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
-          </div>
-        </div>
-      </section>
+
 
       {/* ── CONTACT ── */}
-      <section style={{ backgroundColor: G.white, padding: "6rem 2.5rem", borderTop: `1px solid ${G.border}` }}>
-        <div style={{ maxWidth: "1240px", margin: "0 auto", display: "grid", gridTemplateColumns: "1fr 1fr", gap: "7rem" }}>
+      <section style={{ backgroundColor: G.white, padding: "clamp(3rem, 8vw, 6rem) clamp(1.1rem, 5vw, 2.5rem)", borderTop: `1px solid ${G.border}` }}>
+        <div style={{ maxWidth: "1240px", margin: "0 auto", display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: "clamp(2.5rem, 6vw, 7rem)" }}>
           <div>
             <p className="tag" style={{ margin: "0 0 0.75rem" }}>Get In Touch</p>
             <div style={{ width: "28px", height: "2px", backgroundColor: G.green, marginBottom: "1.25rem", borderRadius: "2px" }} />
-            <h2 className="display" style={{ fontSize: "2.4rem", fontWeight: 700, color: G.ink, letterSpacing: "-0.03em", margin: "0 0 1.25rem", lineHeight: 1.12 }}>We Would Love<br />to Hear From You</h2>
-            <p style={{ fontSize: "0.93rem", lineHeight: 2, color: G.body, margin: "0 0 3rem" }}>Whether you have a question, want to plan your first visit, or simply need someone to talk to — our team is here for you.</p>
+            <h2 className="display" style={{ fontSize: "clamp(1.7rem, 5vw, 2.4rem)", fontWeight: 700, color: G.ink, letterSpacing: "-0.03em", margin: "0 0 1.25rem", lineHeight: 1.12 }}>We Would Love<br />to Hear From You</h2>
+            <p style={{ fontSize: "0.93rem", lineHeight: 2, color: G.body, margin: "0 0 clamp(2rem, 5vw, 3rem)" }}>Whether you have a question, want to plan your first visit, or simply need someone to talk to — our team is here for you.</p>
             <div style={{ display: "flex", flexDirection: "column", gap: "1.4rem" }}>
               {[
                 { icon: "ti-map-pin", label: "Address", val: "123 Grace Avenue, City, State 00000" },
@@ -980,7 +1012,7 @@ export function HomePage({
                   <div style={{ width: "42px", height: "42px", minWidth: "42px", backgroundColor: G.greenLight, borderRadius: "10px", display: "flex", alignItems: "center", justifyContent: "center", border: `1px solid ${G.greenBorder}` }}>
                     <i className={`ti ${c.icon}`} style={{ fontSize: "17px", color: G.green }} aria-hidden="true" />
                   </div>
-                  <div>
+                  <div style={{ minWidth: 0 }}>
                     <p className="tag" style={{ margin: "0 0 3px" }}>{c.label}</p>
                     <p style={{ fontSize: "0.9rem", color: G.body, fontWeight: 500, margin: 0 }}>{c.val}</p>
                   </div>
@@ -988,11 +1020,11 @@ export function HomePage({
               ))}
             </div>
           </div>
-          <div style={{ backgroundColor: G.surface, borderRadius: "20px", padding: "2.5rem", border: `1px solid ${G.border}` }}>
+          <div style={{ backgroundColor: G.surface, borderRadius: "20px", padding: "clamp(1.5rem, 5vw, 2.5rem)", border: `1px solid ${G.border}` }}>
             <h3 className="display" style={{ fontSize: "1.2rem", fontWeight: 700, color: G.ink, margin: "0 0 0.4rem" }}>Send Us a Message</h3>
             <p style={{ fontSize: "0.82rem", color: G.muted, margin: "0 0 1.75rem" }}>We typically respond within one business day.</p>
             <div style={{ display: "flex", flexDirection: "column", gap: "0.85rem" }}>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.75rem" }}>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))", gap: "0.75rem" }}>
                 {["First Name","Last Name"].map(f => (
                   <input key={f} type="text" placeholder={f} className="input-field" style={{ padding: "0.75rem 1rem", border: `1px solid ${G.border}`, borderRadius: "9px", backgroundColor: G.white, fontSize: "0.86rem", color: G.ink, fontFamily: "inherit", width: "100%" }} />
                 ))}
@@ -1018,10 +1050,10 @@ export function HomePage({
       </section>
 
       {/* ── FOOTER ── */}
-      <footer className="footer-pad" style={{ backgroundColor: G.ink, color: "#fff" }}>
+      <footer className="footer-pad" style={{ backgroundColor: G.ink, color: "#fff", padding: "clamp(2.5rem, 6vw, 4rem) clamp(1.1rem, 5vw, 2.5rem)" }}>
         <div style={{ maxWidth: "1240px", margin: "0 auto" }}>
-          <div className="footer-grid" style={{ paddingBottom: "3.5rem", borderBottom: "1px solid rgba(255,255,255,0.07)" }}>
-            <div>
+          <div className="footer-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: "2.5rem", paddingBottom: "clamp(2rem, 5vw, 3.5rem)", borderBottom: "1px solid rgba(255,255,255,0.07)" }}>
+            <div style={{ gridColumn: "1 / -1", maxWidth: "320px" }}>
               <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "1.25rem" }}>
                 <div style={{ width: "40px", height: "40px", borderRadius: "10px", backgroundColor: G.green, display: "flex", alignItems: "center", justifyContent: "center" }}>
                   <CrossLogo size={22} color="#fff" />

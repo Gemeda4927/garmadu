@@ -444,7 +444,6 @@ export const TEAM = [
   },
 ];
 
-// Navigation & Authentication
 export const NAV_LINKS = [
   "Home",
   "About",
@@ -456,7 +455,6 @@ export const NAV_LINKS = [
   "Contact",
 ];
 
-// Clerk Authentication (replacing old credentials)
 export const CLERK_CONFIG = {
   publishableKey: process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY || "",
   afterSignInUrl: "/",
@@ -465,7 +463,6 @@ export const CLERK_CONFIG = {
   signUpUrl: "/sign-up",
 };
 
-// Legacy credentials (kept for backward compatibility, can be removed)
 export const ADMIN_CREDENTIALS = {
   email: "admin@garmadu.org",
   password: "admin123",

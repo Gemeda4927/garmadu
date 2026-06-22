@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { ClerkProvider, useUser, useClerk } from "@clerk/clerk-react";
 
 // Components
 import { ContentModal, LoginModal } from "@/components/Modals";
@@ -9,7 +8,6 @@ import { NotifDetailModal, NotifPanel } from "@/components/Notifications";
 import { Navigation } from "@/components/Navigation";
 import { HomePage } from "@/components/HomePage";
 import { BlogPage } from "@/components/BlogPage";
-import { AdminPage } from "@/components/AdminPage";
 
 // Constants
 import {
@@ -31,19 +29,16 @@ import {
   Toast,
   BlogForm,
   User,
-} from "../constants/types";
+} from "@/types";
+import AdminPage from "@/components/AdminPage";
 
-const clerkPubKey = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY || "";
-
-// Inner App Component (uses Clerk hooks)
-function AppContent() {
-  const { user, isSignedIn } = useUser();
-  const { signOut } = useClerk();
-
+export default function App() {
+  // User state (using your custom user object)
+  const [user, setUser] = useState<User | null>(null);
+  
   // Navigation state
   const [page, setPage] = useState<string>("home");
   const [loginOpen, setLoginOpen] = useState<boolean>(false);
-  const [authMode, setAuthMode] = useState<"sign-in" | "sign-up">("sign-in");
 
   // Modal state
   const [modal, setModal] = useState<ModalData | null>(null);
@@ -84,24 +79,16 @@ function AppContent() {
     setTimeout(() => setToast(null), 3200);
   };
 
-  // Convert Clerk user to our User type
-  const appUser: User | null = isSignedIn && user
-    ? {
-        name: user.fullName || user.username || user.emailAddresses[0]?.emailAddress || "User",
-        role: user.publicMetadata?.role || "member",
-        avatar: user.imageUrl || user.firstName?.[0] || "U",
-      }
-    : null;
-
-  const handleLogout = async () => {
-    await signOut();
-    setPage("home");
-    showToast("See you next time!", "info");
+  const handleLogin = (userData: User) => {
+    setUser(userData);
+    setLoginOpen(false);
+    showToast(`Welcome back, ${userData.name}!`);
   };
 
-  const openAuthModal = (mode: "sign-in" | "sign-up" = "sign-in") => {
-    setAuthMode(mode);
-    setLoginOpen(true);
+  const handleLogout = () => {
+    setUser(null);
+    setPage("home");
+    showToast("See you next time!", "info");
   };
 
   const approveBlog = (id: number) => {
@@ -124,7 +111,7 @@ function AppContent() {
   return (
     <div
       style={{
-        fontFamily: "'Inter',sans-serif",
+        fontFamily: "'Inter', sans-serif",
         backgroundColor: G.white,
         color: G.ink,
         minHeight: "100vh",
@@ -134,15 +121,12 @@ function AppContent() {
 
       {/* Modals */}
       {modal && <ContentModal data={modal.data} type={modal.type} onClose={() => setModal(null)} />}
-      
-      {/* Clerk Auth Modal - No custom login form */}
       {loginOpen && (
         <LoginModal
           onClose={() => setLoginOpen(false)}
-          defaultMode={authMode}
+          onLogin={handleLogin}
         />
       )}
-      
       {notifDetailModal && (
         <NotifDetailModal
           notif={notifDetailModal}
@@ -186,8 +170,8 @@ function AppContent() {
       <Navigation
         page={page}
         setPage={setPage}
-        user={appUser}
-        setLoginOpen={openAuthModal}
+        user={user}
+        setLoginOpen={setLoginOpen}
         handleLogout={handleLogout}
         notifOpen={notifOpen}
         setNotifOpen={setNotifOpen}
@@ -212,8 +196,8 @@ function AppContent() {
           setModal={setModal}
           setPage={setPage}
           setBlogModal={setBlogModal}
-          user={appUser}
-          setLoginOpen={openAuthModal}
+          user={user}
+          setLoginOpen={setLoginOpen}
           showToast={showToast}
           prayerBoard={prayerBoard}
           setPrayerBoard={setPrayerBoard}
@@ -232,7 +216,7 @@ function AppContent() {
         <BlogPage
           blogModal={blogModal}
           setBlogModal={setBlogModal}
-          user={appUser}
+          user={user}
           showToast={showToast}
           blogPosts={blogPosts}
           setBlogPosts={setBlogPosts}
@@ -245,7 +229,7 @@ function AppContent() {
         />
       )}
 
-      {page === "admin" && appUser?.role === "admin" && (
+      {page === "admin" && user?.role === "admin" && (
         <AdminPage
           pendingPosts={pendingPosts}
           approveBlog={approveBlog}
@@ -258,7 +242,7 @@ function AppContent() {
         />
       )}
 
-      {page === "admin" && appUser?.role !== "admin" && (
+      {page === "admin" && user?.role !== "admin" && (
         <div style={{ textAlign: "center", padding: "6rem 2rem" }}>
           <p style={{ color: G.muted }}>Access denied.</p>
         </div>
@@ -269,14 +253,5 @@ function AppContent() {
         <div onClick={() => setNotifOpen(false)} style={{ position: "fixed", inset: 0, zIndex: 99 }} />
       )}
     </div>
-  );
-}
-
-// Main App with Clerk Provider
-export default function App() {
-  return (
-    <ClerkProvider publishableKey={clerkPubKey}>
-      <AppContent />
-    </ClerkProvider>
   );
 }

@@ -750,10 +750,32 @@ export default function AdminPage() {
           display: "flex", flexDirection: "column",
           position: "sticky", top: 0, height: "100vh", overflowY: "auto",
         }}>
-        
+          {/* Logo */}
+          <div style={{
+            padding: "1.5rem 1.4rem 1.2rem",
+            borderBottom: `1px solid ${G.borderLight}`,
+          }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+              <div style={{
+                width: 36, height: 36, borderRadius: "9px",
+                backgroundColor: G.green,
+                display: "flex", alignItems: "center", justifyContent: "center",
+              }}>
+                <svg width="18" height="18" viewBox="0 0 100 100" fill="white">
+                  <rect x="42" y="8" width="16" height="84" rx="3" />
+                  <rect x="14" y="34" width="72" height="16" rx="3" />
+                </svg>
+              </div>
+              <div>
+                <p style={{ fontSize: "0.88rem", fontWeight: 700, color: G.ink, margin: 0, lineHeight: 1.2 }}>Garmadu</p>
+                <p style={{ fontSize: "0.58rem", color: G.muted, margin: 0, letterSpacing: "0.1em", textTransform: "uppercase" }}>Admin Panel</p>
+              </div>
+            </div>
+          </div>
 
           {/* Nav */}
           <nav style={{ padding: "1rem 0.75rem", flex: 1 }}>
+            <p style={{ fontSize: "0.58rem", fontWeight: 700, color: G.hint, textTransform: "uppercase", letterSpacing: "0.14em", padding: "0 0.6rem", margin: "0 0 0.5rem" }}>Menu</p>
             {NAV.map(n => {
               const isActive = active === n.id;
               return (
