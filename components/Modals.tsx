@@ -106,17 +106,24 @@ export function ContentModal({ data, type, onClose }: ContentModalProps) {
 }
 
 // ============================================================
-// LoginModal - Fully Custom Native Component
+// AuthModal (exported as LoginModal) - Sign in + Create account
+// Sharper, more intentional visual identity:
+//   - gradient top edge as a signature stripe
+//   - sliding tab indicator between "Sign in" / "Create account"
+//   - real icon mark with soft halo instead of a flat square
+//   - per-field inline validation, not one generic error
 // ============================================================
-interface LoginModalProps {
+interface AuthModalProps {
   onClose: () => void;
   onLogin: (user: User) => void;
 }
 
+type AuthMode = "signin" | "signup";
+
 const inputStyle = {
   width: "100%",
-  padding: "0.58rem 0.85rem",
-  borderRadius: "8px",
+  padding: "0.62rem 0.85rem",
+  borderRadius: "9px",
   border: `1.5px solid ${G.border}`,
   fontSize: "0.83rem",
   fontFamily: "inherit",
@@ -124,7 +131,7 @@ const inputStyle = {
   backgroundColor: G.white,
   outline: "none",
   boxSizing: "border-box" as const,
-  transition: "border-color 0.15s",
+  transition: "border-color 0.15s, box-shadow 0.15s",
 };
 
 const labelStyle = {
@@ -136,41 +143,145 @@ const labelStyle = {
   letterSpacing: "0.02em",
 };
 
-export function LoginModal({ onClose, onLogin }: LoginModalProps) {
+const errorTextStyle = {
+  fontSize: "0.68rem",
+  color: "#DC2626",
+  margin: "4px 0 0",
+  display: "flex",
+  alignItems: "center",
+  gap: "4px",
+};
+
+function AuthField({
+  label,
+  field,
+  type,
+  placeholder,
+  value,
+  onChange,
+  error,
+  focusedField,
+  setFocusedField,
+  onKeyDown,
+}: {
+  label: string;
+  field: string;
+  type: string;
+  placeholder: string;
+  value: string;
+  onChange: (v: string) => void;
+  error?: string;
+  focusedField: string | null;
+  setFocusedField: (f: string | null) => void;
+  onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
+}) {
+  const focused = focusedField === field;
+  return (
+    <div>
+      <label style={labelStyle}>{label}</label>
+      <input
+        type={type}
+        placeholder={placeholder}
+        value={value}
+        onChange={e => onChange(e.target.value)}
+        onFocus={() => setFocusedField(field)}
+        onBlur={() => setFocusedField(null)}
+        onKeyDown={onKeyDown}
+        style={{
+          ...inputStyle,
+          borderColor: error ? "#DC2626" : focused ? G.green : G.border,
+          boxShadow: focused ? `0 0 0 3px ${G.greenLight}` : "none",
+        }}
+      />
+      {error && (
+        <p style={errorTextStyle}>
+          <i className="ti ti-alert-circle" style={{ fontSize: "11px" }} aria-hidden="true" />
+          {error}
+        </p>
+      )}
+    </div>
+  );
+}
+
+export function AuthModal({ onClose, onLogin }: AuthModalProps) {
+  const [mode, setMode] = useState<AuthMode>("signin");
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [formError, setFormError] = useState("");
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [focusedField, setFocusedField] = useState<string | null>(null);
 
-  const handleSubmit = async () => {
-    if (!email || !password) {
-      setError("Please fill in all fields.");
-      return;
-    }
-    setLoading(true);
-    setError("");
+  const switchMode = (next: AuthMode) => {
+    if (next === mode) return;
+    setMode(next);
+    setFormError("");
+    setFieldErrors({});
+  };
 
-    // Simulate async login
+  const validateSignIn = () => {
+    const errs: Record<string, string> = {};
+    if (!email) errs.email = "Enter your email.";
+    if (!password) errs.password = "Enter your password.";
+    return errs;
+  };
+
+  const validateSignUp = () => {
+    const errs: Record<string, string> = {};
+    if (!name.trim()) errs.name = "Enter your full name.";
+    if (!email) errs.email = "Enter your email.";
+    else if (!/^\S+@\S+\.\S+$/.test(email)) errs.email = "Enter a valid email.";
+    if (!password) errs.password = "Choose a password.";
+    else if (password.length < 6) errs.password = "Use at least 6 characters.";
+    if (!confirmPassword) errs.confirmPassword = "Confirm your password.";
+    else if (confirmPassword !== password) errs.confirmPassword = "Passwords don't match.";
+    return errs;
+  };
+
+  const handleSubmit = async () => {
+    const errs = mode === "signin" ? validateSignIn() : validateSignUp();
+    setFieldErrors(errs);
+    if (Object.keys(errs).length > 0) return;
+
+    setFormError("");
+    setLoading(true);
     await new Promise(resolve => setTimeout(resolve, 500));
 
-    // Check credentials
-    if (email === ADMIN_CREDENTIALS.email && password === ADMIN_CREDENTIALS.password) {
-      onLogin({ name: "Admin", role: "admin", avatar: "AD" });
-    } else if (email === MEMBER_CREDENTIALS.email && password === MEMBER_CREDENTIALS.password) {
-      onLogin({ name: "Abena Asante", role: "member", avatar: "AA" });
+    if (mode === "signin") {
+      if (email === ADMIN_CREDENTIALS.email && password === ADMIN_CREDENTIALS.password) {
+        onLogin({ name: "Admin", role: "admin", avatar: "AD" });
+      } else if (email === MEMBER_CREDENTIALS.email && password === MEMBER_CREDENTIALS.password) {
+        onLogin({ name: "Abena Asante", role: "member", avatar: "AA" });
+      } else {
+        setFormError("Invalid credentials. Try admin@garmadu.org / admin123");
+        setLoading(false);
+        return;
+      }
     } else {
-      setError("Invalid credentials. Try admin@garmadu.org / admin123");
-      setLoading(false);
-      return;
+      // Demo create-account: build a member-style account from the form.
+      const initials = name
+        .trim()
+        .split(/\s+/)
+        .map(p => p[0]?.toUpperCase())
+        .slice(0, 2)
+        .join("") || "NW";
+      onLogin({ name: name.trim(), role: "member", avatar: initials });
     }
     setLoading(false);
   };
 
-  const getInputStyle = (field: string) => ({
-    ...inputStyle,
-    borderColor: focusedField === field ? G.green : G.border,
-  });
+  const update = (field: string, setter: (v: string) => void) => (v: string) => {
+    setter(v);
+    if (fieldErrors[field]) {
+      setFieldErrors(prev => {
+        const next = { ...prev };
+        delete next[field];
+        return next;
+      });
+    }
+  };
 
   return (
     <div
@@ -191,168 +302,291 @@ export function LoginModal({ onClose, onLogin }: LoginModalProps) {
         onClick={e => e.stopPropagation()}
         style={{
           backgroundColor: G.white,
-          borderRadius: "16px",
+          borderRadius: "18px",
           width: "100%",
-          maxWidth: "360px",
-          padding: "1.4rem 1.5rem 1.3rem",
-          boxShadow: "0 24px 64px rgba(0,0,0,0.16), 0 0 0 1px rgba(0,0,0,0.06)",
+          maxWidth: "380px",
+          boxShadow: "0 28px 72px rgba(0,0,0,0.18), 0 0 0 1px rgba(0,0,0,0.06)",
           position: "relative",
+          overflow: "hidden",
         }}
       >
-        {/* Close Button */}
-        <button
-          onClick={onClose}
-          aria-label="Close"
+        {/* Signature gradient stripe */}
+        <div
           style={{
-            position: "absolute",
-            top: "0.9rem",
-            right: "0.9rem",
-            width: "26px",
-            height: "26px",
-            borderRadius: "6px",
-            backgroundColor: "transparent",
-            border: `1px solid ${G.border}`,
-            cursor: "pointer",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            color: G.muted,
-            padding: 0,
+            height: "5px",
+            width: "100%",
+            background: `linear-gradient(90deg, ${G.green}, ${G.greenMid}, ${G.green})`,
           }}
-        >
-          <i className="ti ti-x" style={{ fontSize: "12px" }} aria-hidden="true" />
-        </button>
+        />
 
-        {/* Header */}
-        <div style={{ display: "flex", alignItems: "center", gap: "9px", marginBottom: "1rem" }}>
-          <div
+        <div style={{ padding: "1.5rem 1.6rem 1.4rem" }}>
+          {/* Close Button */}
+          <button
+            onClick={onClose}
+            aria-label="Close"
             style={{
-              width: "32px",
-              height: "32px",
-              borderRadius: "9px",
-              backgroundColor: G.green,
+              position: "absolute",
+              top: "1.1rem",
+              right: "1.1rem",
+              width: "26px",
+              height: "26px",
+              borderRadius: "7px",
+              backgroundColor: "transparent",
+              border: `1px solid ${G.border}`,
+              cursor: "pointer",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              flexShrink: 0,
+              color: G.muted,
+              padding: 0,
             }}
           >
-            <CrossLogo size={18} color="#fff" />
-          </div>
-          <div>
-            <h2 className="display" style={{ fontSize: "0.97rem", fontWeight: 700, color: G.ink, margin: 0, lineHeight: 1.2 }}>
-              Welcome back
-            </h2>
-            <p style={{ fontSize: "0.72rem", color: G.muted, margin: 0 }}>
-              Sign in to your account
-            </p>
-          </div>
-        </div>
+            <i className="ti ti-x" style={{ fontSize: "12px" }} aria-hidden="true" />
+          </button>
 
-        {/* Fields */}
-        <div style={{ display: "flex", flexDirection: "column", gap: "0.6rem", marginBottom: "0.85rem" }}>
-          <div>
-            <label style={labelStyle}>Email</label>
-            <input
+          {/* Header with halo icon mark */}
+          <div style={{ display: "flex", alignItems: "center", gap: "11px", marginBottom: "1.2rem" }}>
+            <div
+              style={{
+                width: "42px",
+                height: "42px",
+                borderRadius: "12px",
+                background: `linear-gradient(155deg, ${G.green}, ${G.greenText})`,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                flexShrink: 0,
+                boxShadow: `0 6px 16px -4px ${G.green}99`,
+              }}
+            >
+              <CrossLogo size={20} color="#fff" />
+            </div>
+            <div>
+              <h2 className="display" style={{ fontSize: "1.02rem", fontWeight: 700, color: G.ink, margin: 0, lineHeight: 1.2 }}>
+                {mode === "signin" ? "Welcome back" : "Join Garmadu Church"}
+              </h2>
+              <p style={{ fontSize: "0.74rem", color: G.muted, margin: "2px 0 0" }}>
+                {mode === "signin" ? "Sign in to your account" : "Create your member account"}
+              </p>
+            </div>
+          </div>
+
+          {/* Sliding tabs */}
+          <div
+            style={{
+              position: "relative",
+              display: "flex",
+              backgroundColor: G.surface,
+              borderRadius: "10px",
+              padding: "3px",
+              marginBottom: "1.2rem",
+              border: `1px solid ${G.border}`,
+            }}
+          >
+            <div
+              style={{
+                position: "absolute",
+                top: "3px",
+                left: mode === "signin" ? "3px" : "calc(50% + 0px)",
+                width: "calc(50% - 3px)",
+                height: "calc(100% - 6px)",
+                backgroundColor: G.white,
+                borderRadius: "8px",
+                boxShadow: "0 1px 4px rgba(0,0,0,0.08)",
+                transition: "left 0.22s cubic-bezier(0.4,0,0.2,1)",
+              }}
+            />
+            {(["signin", "signup"] as AuthMode[]).map(m => (
+              <button
+                key={m}
+                onClick={() => switchMode(m)}
+                style={{
+                  position: "relative",
+                  flex: 1,
+                  zIndex: 1,
+                  padding: "0.5rem 0",
+                  border: "none",
+                  background: "transparent",
+                  cursor: "pointer",
+                  fontFamily: "inherit",
+                  fontWeight: 700,
+                  fontSize: "0.78rem",
+                  color: mode === m ? G.greenText : G.muted,
+                  transition: "color 0.2s",
+                }}
+              >
+                {m === "signin" ? "Sign in" : "Create account"}
+              </button>
+            ))}
+          </div>
+
+          {/* Fields */}
+          <div style={{ display: "flex", flexDirection: "column", gap: "0.65rem", marginBottom: "0.9rem" }}>
+            {mode === "signup" && (
+              <AuthField
+                label="Full name"
+                field="name"
+                type="text"
+                placeholder="Kwame Mensah"
+                value={name}
+                onChange={update("name", setName)}
+                error={fieldErrors.name}
+                focusedField={focusedField}
+                setFocusedField={setFocusedField}
+              />
+            )}
+            <AuthField
+              label="Email"
+              field="email"
               type="email"
               placeholder="you@email.com"
               value={email}
-              onChange={e => setEmail(e.target.value)}
-              onFocus={() => setFocusedField("email")}
-              onBlur={() => setFocusedField(null)}
-              style={getInputStyle("email")}
+              onChange={update("email", setEmail)}
+              error={fieldErrors.email}
+              focusedField={focusedField}
+              setFocusedField={setFocusedField}
             />
-          </div>
-          <div>
-            <label style={labelStyle}>Password</label>
-            <input
+            <AuthField
+              label="Password"
+              field="password"
               type="password"
               placeholder="••••••••"
               value={password}
-              onChange={e => setPassword(e.target.value)}
-              onFocus={() => setFocusedField("password")}
-              onBlur={() => setFocusedField(null)}
-              onKeyDown={e => e.key === "Enter" && handleSubmit()}
-              style={getInputStyle("password")}
+              onChange={update("password", setPassword)}
+              error={fieldErrors.password}
+              focusedField={focusedField}
+              setFocusedField={setFocusedField}
+              onKeyDown={e => mode === "signin" && e.key === "Enter" && handleSubmit()}
             />
+            {mode === "signup" && (
+              <AuthField
+                label="Confirm password"
+                field="confirmPassword"
+                type="password"
+                placeholder="••••••••"
+                value={confirmPassword}
+                onChange={update("confirmPassword", setConfirmPassword)}
+                error={fieldErrors.confirmPassword}
+                focusedField={focusedField}
+                setFocusedField={setFocusedField}
+                onKeyDown={e => e.key === "Enter" && handleSubmit()}
+              />
+            )}
           </div>
-        </div>
 
-        {/* Error */}
-        {error && (
-          <div
+          {/* Form-level error */}
+          {formError && (
+            <div
+              style={{
+                backgroundColor: "#FEF2F2",
+                border: "1px solid #FECACA",
+                borderRadius: "8px",
+                padding: "0.55rem 0.7rem",
+                fontSize: "0.75rem",
+                color: "#DC2626",
+                marginBottom: "0.8rem",
+                display: "flex",
+                alignItems: "center",
+                gap: "5px",
+              }}
+            >
+              <i className="ti ti-alert-circle" style={{ fontSize: "12px", flexShrink: 0 }} aria-hidden="true" />
+              {formError}
+            </div>
+          )}
+
+          {/* Submit */}
+          <button
+            onClick={handleSubmit}
+            disabled={loading}
             style={{
-              backgroundColor: "#FEF2F2",
-              border: "1px solid #FECACA",
-              borderRadius: "7px",
-              padding: "0.5rem 0.7rem",
-              fontSize: "0.75rem",
-              color: "#DC2626",
-              marginBottom: "0.75rem",
+              width: "100%",
+              padding: "0.7rem",
+              borderRadius: "10px",
+              background: loading ? G.greenMid : `linear-gradient(155deg, ${G.green}, ${G.greenText})`,
+              color: "#fff",
+              border: "none",
+              fontWeight: 700,
+              fontSize: "0.85rem",
+              fontFamily: "inherit",
+              cursor: loading ? "not-allowed" : "pointer",
               display: "flex",
               alignItems: "center",
-              gap: "5px",
+              justifyContent: "center",
+              gap: "7px",
+              opacity: loading ? 0.85 : 1,
+              boxShadow: loading ? "none" : `0 8px 20px -6px ${G.green}aa`,
+              transition: "transform 0.1s, box-shadow 0.15s",
             }}
+            onMouseDown={e => { if (!loading) e.currentTarget.style.transform = "scale(0.98)"; }}
+            onMouseUp={e => { e.currentTarget.style.transform = "scale(1)"; }}
           >
-            <i className="ti ti-alert-circle" style={{ fontSize: "12px", flexShrink: 0 }} />
-            {error}
-          </div>
-        )}
+            {loading ? (
+              <>
+                <i className="ti ti-loader-2" style={{ fontSize: "14px", animation: "spin 0.8s linear infinite" }} aria-hidden="true" />
+                {mode === "signin" ? "Signing in…" : "Creating account…"}
+              </>
+            ) : mode === "signin" ? (
+              "Sign in"
+            ) : (
+              "Create account"
+            )}
+          </button>
 
-        {/* Submit */}
-        <button
-          onClick={handleSubmit}
-          disabled={loading}
-          style={{
-            width: "100%",
-            padding: "0.68rem",
-            borderRadius: "9px",
-            backgroundColor: loading ? G.greenMid : G.green,
-            color: "#fff",
-            border: "none",
-            fontWeight: 700,
-            fontSize: "0.84rem",
-            fontFamily: "inherit",
-            cursor: loading ? "not-allowed" : "pointer",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            gap: "7px",
-            opacity: loading ? 0.8 : 1,
-          }}
-        >
-          {loading ? (
-            <>
-              <i className="ti ti-loader-2" style={{ fontSize: "14px", animation: "spin 0.8s linear infinite" }} />
-              Signing in…
-            </>
-          ) : (
-            "Sign in"
+          {/* Switch-mode hint */}
+          <p style={{ fontSize: "0.74rem", color: G.muted, textAlign: "center", margin: "0.85rem 0 0" }}>
+            {mode === "signin" ? (
+              <>
+                New here?{" "}
+                <span
+                  onClick={() => switchMode("signup")}
+                  style={{ color: G.greenText, fontWeight: 700, cursor: "pointer" }}
+                >
+                  Create an account
+                </span>
+              </>
+            ) : (
+              <>
+                Already a member?{" "}
+                <span
+                  onClick={() => switchMode("signin")}
+                  style={{ color: G.greenText, fontWeight: 700, cursor: "pointer" }}
+                >
+                  Sign in
+                </span>
+              </>
+            )}
+          </p>
+
+          {/* Demo Credentials (sign-in only) */}
+          {mode === "signin" && (
+            <div
+              style={{
+                marginTop: "1rem",
+                padding: "0.75rem",
+                backgroundColor: G.surface,
+                borderRadius: "9px",
+                border: `1px solid ${G.border}`,
+              }}
+            >
+              <p style={{ fontSize: "0.65rem", color: G.muted, margin: "0 0 4px", textAlign: "center", fontWeight: 600 }}>
+                Demo accounts
+              </p>
+              <p style={{ fontSize: "0.6rem", color: G.muted, margin: "0 0 2px", textAlign: "center" }}>
+                Admin: admin@garmadu.org / admin123
+              </p>
+              <p style={{ fontSize: "0.6rem", color: G.muted, margin: 0, textAlign: "center" }}>
+                Member: member@garmadu.org / member123
+              </p>
+            </div>
           )}
-        </button>
-
-        {/* Demo Credentials */}
-        <div
-          style={{
-            marginTop: "1rem",
-            padding: "0.75rem",
-            backgroundColor: G.surface,
-            borderRadius: "8px",
-            border: `1px solid ${G.border}`,
-          }}
-        >
-          <p style={{ fontSize: "0.65rem", color: G.muted, margin: "0 0 4px", textAlign: "center", fontWeight: 600 }}>
-            Demo accounts:
-          </p>
-          <p style={{ fontSize: "0.6rem", color: G.muted, margin: "0 0 2px", textAlign: "center" }}>
-            Admin: admin@garmadu.org / admin123
-          </p>
-          <p style={{ fontSize: "0.6rem", color: G.muted, margin: 0, textAlign: "center" }}>
-            Member: member@garmadu.org / member123
-          </p>
         </div>
       </div>
       <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
     </div>
   );
 }
+
+// `page.tsx` imports `LoginModal` — keep that name working as an alias
+// for the new AuthModal so no other files need to change.
+export const LoginModal = AuthModal;
