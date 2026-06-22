@@ -33,7 +33,6 @@ import {
   User,
 } from "../constants/types";
 
-// Clerk publishable key
 const clerkPubKey = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY || "";
 
 // Inner App Component (uses Clerk hooks)

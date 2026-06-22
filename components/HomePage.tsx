@@ -96,171 +96,615 @@ export function HomePage({
 
   return (
     <>
-      {/* ── BANNER ── */}
-      {!reminderDismissed && (
-        <div style={{ backgroundColor: G.greenDark, padding: "0.65rem 2.5rem", display: "flex", alignItems: "center", gap: "12px" }}>
-          <i className="ti ti-bell-ringing" style={{ fontSize: "15px", color: G.greenMid, flexShrink: 0 }} aria-hidden="true" />
-          <div style={{ flex: 1, display: "flex", alignItems: "center", gap: "12px", flexWrap: "wrap" }}>
-            <span style={{ fontSize: "0.82rem", fontWeight: 700, color: "#fff" }}>{DAILY_REMINDER.title}</span>
-            <span style={{ fontSize: "0.78rem", color: "rgba(255,255,255,0.7)" }}>{DAILY_REMINDER.body}</span>
-            <span style={{ display: "inline-flex", alignItems: "center", gap: "4px", fontSize: "0.72rem", color: G.greenMid, fontWeight: 600 }}>
-              <i className="ti ti-clock" style={{ fontSize: "12px" }} aria-hidden="true" />{DAILY_REMINDER.time}
-            </span>
+{/* ── HERO ── */}
+<section className="grid-bg hero-section" style={{
+  padding: "0 2rem",
+  minHeight: "95vh",
+  display: "flex",
+  alignItems: "center",
+  background: "linear-gradient(180deg, #F8FAFB 0%, #FFFFFF 100%)",
+}}>
+  <div style={{
+    maxWidth: "1240px",
+    margin: "0 auto",
+    width: "100%",
+    paddingTop: "3rem",
+    paddingBottom: "3rem",
+  }}>
+
+    {/* Hero image with real image and fallback */}
+    <div style={{
+      width: "100%",
+      maxWidth: "860px",
+      height: "clamp(220px, 38vw, 460px)",
+      borderRadius: "20px",
+      overflow: "hidden",
+      border: `1px solid ${G.border}`,
+      boxShadow: "0 16px 48px rgba(15,23,42,0.12)",
+      margin: "0 auto 3.5rem",
+      position: "relative",
+      background: "linear-gradient(135deg, #14532D 0%, #166534 45%, #15803d 100%)",
+    }}>
+      {/* Decorative cross — always visible as background */}
+      <div style={{
+        position: "absolute",
+        inset: 0,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        opacity: 0.06,
+        pointerEvents: "none",
+        zIndex: 1,
+      }}>
+        <svg width="260" height="260" viewBox="0 0 100 100" fill="white">
+          <rect x="42" y="8" width="16" height="84" rx="3" />
+          <rect x="14" y="34" width="72" height="16" rx="3" />
+        </svg>
+      </div>
+      
+      {/* Green glow overlay */}
+      <div style={{
+        position: "absolute",
+        inset: 0,
+        background: "radial-gradient(ellipse 70% 55% at 50% 38%, rgba(134,239,172,0.15) 0%, transparent 70%)",
+        pointerEvents: "none",
+        zIndex: 2,
+      }} />
+      
+      {/* Real Unsplash image */}
+      {!heroFailed ? (
+        <img
+          src="/garmadu.png"
+          alt="Garmadu Church sanctuary"
+          referrerPolicy="no-referrer"
+          crossOrigin="anonymous"
+          onError={() => setHeroFailed(true)}
+          style={{
+            position: "absolute",
+            inset: 0,
+            width: "100%",
+            height: "100%",
+            objectFit: "cover",
+            objectPosition: "center 30%",
+            display: "block",
+            zIndex: 3,
+          }}
+        />
+      ) : (
+        /* Fallback gradient pattern when image fails */
+        <div style={{
+          position: "absolute",
+          inset: 0,
+          background: "linear-gradient(135deg, #14532D 0%, #166534 30%, #15803d 60%, #16A34A 100%)",
+          zIndex: 3,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}>
+          <div style={{
+            textAlign: "center",
+            color: "rgba(255,255,255,0.15)",
+          }}>
+            <svg width="100" height="100" viewBox="0 0 100 100" fill="currentColor">
+              <rect x="42" y="8" width="16" height="84" rx="3" />
+              <rect x="14" y="34" width="72" height="16" rx="3" />
+            </svg>
           </div>
-          <button onClick={() => setReminderDismissed(true)} style={{ background: "none", border: "none", color: "rgba(255,255,255,0.5)", cursor: "pointer" }}>
-            <i className="ti ti-x" style={{ fontSize: "15px" }} aria-hidden="true" />
-          </button>
         </div>
       )}
+      
+      {/* Gradient overlay for text readability */}
+      <div style={{
+        position: "absolute",
+        inset: 0,
+        background: "linear-gradient(to top, rgba(15,23,42,0.5) 0%, rgba(15,23,42,0.1) 40%, transparent 70%)",
+        pointerEvents: "none",
+        zIndex: 4,
+      }} />
+      
+      {/* Live pill */}
+      <div style={{
+        position: "absolute",
+        bottom: "1.25rem",
+        left: "1.25rem",
+        display: "flex",
+        alignItems: "center",
+        gap: "7px",
+        backgroundColor: "rgba(0,0,0,0.5)",
+        backdropFilter: "blur(12px)",
+        border: "1px solid rgba(255,255,255,0.15)",
+        borderRadius: "100px",
+        padding: "6px 16px",
+        zIndex: 5,
+      }}>
+        <div style={{
+          width: 7,
+          height: 7,
+          borderRadius: "50%",
+          backgroundColor: "#4ADE80",
+          animation: "pulse 2s infinite",
+        }} />
+        <span style={{
+          fontSize: "0.7rem",
+          fontWeight: 700,
+          color: "#fff",
+          letterSpacing: "0.07em",
+          fontFamily: "'Inter', sans-serif",
+        }}>
+          LIVE SUNDAYS · 9 AM &amp; 11 AM
+        </span>
+      </div>
+    </div>
 
-      {/* ── HERO ── */}
-      <section className="grid-bg hero-section">
-        <div style={{ maxWidth: "1240px", margin: "0 auto", width: "100%", paddingTop: "3rem", paddingBottom: "3rem" }}>
-
-          {/* Hero image with green fallback */}
+    <div className="hero-grid" style={{
+      display: "grid",
+      gridTemplateColumns: "1fr 420px",
+      gap: "5rem",
+      alignItems: "start",
+    }}>
+      {/* Left: headline + CTAs */}
+      <div>
+        <div style={{
+          display: "inline-flex",
+          alignItems: "center",
+          gap: "8px",
+          backgroundColor: G.greenLight,
+          border: `1px solid ${G.greenBorder}`,
+          borderRadius: "100px",
+          padding: "6px 14px",
+          marginBottom: "1.75rem",
+        }}>
           <div style={{
-            width: "100%", maxWidth: "860px", height: "clamp(220px,38vw,460px)",
-            borderRadius: "20px", overflow: "hidden",
-            border: `1px solid ${G.border}`, boxShadow: "0 16px 48px rgba(15,23,42,0.12)",
-            margin: "0 auto 3rem", position: "relative",
-            background: "linear-gradient(135deg,#14532D 0%,#166534 45%,#15803d 100%)",
-          }}>
-            {/* Decorative cross — always visible as background */}
-            <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", opacity: 0.06, pointerEvents: "none" }}>
-              <svg width="260" height="260" viewBox="0 0 100 100" fill="white">
-                <rect x="42" y="8" width="16" height="84" rx="3"/>
-                <rect x="14" y="34" width="72" height="16" rx="3"/>
-              </svg>
-            </div>
-            <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse 70% 55% at 50% 38%, rgba(134,239,172,0.15) 0%, transparent 70%)", pointerEvents: "none" }} />
-            {/* Unsplash photo on top — hidden if fails */}
-            {!heroFailed && (
-              <UnsplashImg
-                photoId="photo-1438232992991-995b671e4268"
-                params="w=1400&q=85"
-                alt="Garmadu Church sanctuary"
-                onError={() => setHeroFailed(true)}
-                style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", objectPosition: "center 30%", display: "block" }}
-              />
-            )}
-            {/* Gradient overlay */}
-            <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(15,23,42,0.45) 0%, transparent 50%)", pointerEvents: "none" }} />
-            {/* Live pill */}
-            <div style={{ position: "absolute", bottom: "1.25rem", left: "1.25rem", display: "flex", alignItems: "center", gap: "7px", backgroundColor: "rgba(255,255,255,0.14)", backdropFilter: "blur(10px)", border: "1px solid rgba(255,255,255,0.22)", borderRadius: "100px", padding: "5px 14px" }}>
-              <div style={{ width: 7, height: 7, borderRadius: "50%", backgroundColor: "#4ADE80" }} className="pulse" />
-              <span style={{ fontSize: "0.7rem", fontWeight: 700, color: "#fff", letterSpacing: "0.07em" }}>LIVE SUNDAYS · 9 AM &amp; 11 AM</span>
-            </div>
-          </div>
-
-          <div className="hero-grid">
-            <div>
-              <div style={{ display: "inline-flex", alignItems: "center", gap: "8px", backgroundColor: G.greenLight, border: `1px solid ${G.greenBorder}`, borderRadius: "100px", padding: "6px 14px", marginBottom: "1.75rem" }}>
-                <div style={{ width: 7, height: 7, borderRadius: "50%", backgroundColor: G.green }} className="pulse" />
-                <span className="tag" style={{ margin: 0 }}>Live Sunday Services</span>
-              </div>
-              <p style={{ fontSize: "0.88rem", color: G.muted, fontWeight: 500, margin: "0 0 0.4rem" }}>Hello, we're</p>
-              <h1 className="display" style={{ fontSize: "clamp(2.2rem,8vw,4rem)", fontWeight: 700, lineHeight: 1.06, color: G.ink, marginBottom: "0.4rem", letterSpacing: "-0.03em" }}>
-                Garmadu Church
-              </h1>
-              <h2 style={{ fontSize: "clamp(1rem,4vw,1.4rem)", fontWeight: 400, color: G.green, margin: "0 0 1.5rem", letterSpacing: "-0.01em" }}>
-                A place of <span style={{ fontWeight: 700 }}>Faith, Grace</span> and Community
-              </h2>
-              <p style={{ fontSize: "0.93rem", lineHeight: 1.9, color: G.body, maxWidth: "420px", marginBottom: "2.25rem" }}>
-                We craft <span style={{ color: G.green, fontWeight: 600 }}>spiritual experiences</span> rooted in scripture. A church family called to love God and serve one another — no matter where you come from.
-              </p>
-              <div style={{ display: "flex", gap: "0.85rem", marginBottom: "2.75rem", flexWrap: "wrap" }}>
-                <button className="btn-green" onClick={(e) => { addSparkle(e); showToast("Welcome! We'd love to see you this Sunday ✨"); }}
-                  style={{ position: "relative", overflow: "hidden", display: "inline-flex", alignItems: "center", gap: "8px", backgroundColor: G.green, color: "#fff", padding: "0.82rem 1.9rem", borderRadius: "10px", fontSize: "0.87rem", fontWeight: 700, border: "none", cursor: "pointer", fontFamily: "inherit" }}>
-                  {sparkles.map(s => <Sparkle key={s.id} style={{ left: s.x, top: s.y, color: s.color }} />)}
-                  Plan Your Visit
-                  <i className="ti ti-arrow-right" style={{ fontSize: "14px" }} aria-hidden="true" />
-                </button>
-                <button className="btn-outline" onClick={() => setPage("blog")}
-                  style={{ display: "inline-flex", alignItems: "center", gap: "7px", border: `1.5px solid ${G.border}`, color: G.ink, padding: "0.82rem 1.9rem", borderRadius: "10px", fontSize: "0.87rem", fontWeight: 600, background: "transparent", cursor: "pointer", fontFamily: "inherit" }}>
-                  <i className="ti ti-book" style={{ fontSize: "14px" }} aria-hidden="true" /> Read Blog
-                </button>
-              </div>
-              <div className="hero-stats-row" style={{ paddingTop: "1.75rem", borderTop: `1px solid ${G.border}` }}>
-                {[
-                  { label: "Sunday Services", val: "9 AM & 11 AM" },
-                  { label: "Bible Study", val: "Wed 7 PM" },
-                  { label: "Location", val: "Grace Ave" },
-                ].map(s => (
-                  <div key={s.label}>
-                    <p className="tag" style={{ margin: "0 0 4px" }}>{s.label}</p>
-                    <p style={{ fontSize: "0.86rem", color: G.body, fontWeight: 600, margin: 0 }}>{s.val}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Right widgets */}
-            <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-              {/* Verse of the day */}
-              <div style={{ backgroundColor: G.white, border: `1px solid ${G.greenBorder}`, borderRadius: "16px", padding: "1.5rem", boxShadow: "0 4px 20px rgba(22,163,74,0.08)", position: "relative", overflow: "hidden" }}>
-                <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: "3px", background: `linear-gradient(90deg,${G.green},${G.greenMid},${G.gold})`, borderRadius: "16px 16px 0 0" }} />
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "1rem" }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                    <div style={{ width: "30px", height: "30px", borderRadius: "8px", backgroundColor: G.greenLight, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                      <i className="ti ti-book-2" style={{ fontSize: "15px", color: G.green }} aria-hidden="true" />
-                    </div>
-                    <span style={{ fontSize: "0.7rem", fontWeight: 700, color: G.greenText, textTransform: "uppercase", letterSpacing: "0.12em" }}>Verse of the Day</span>
-                  </div>
-                  <span style={{ fontSize: "0.7rem", color: G.hint }}>June 21</span>
-                </div>
-                <p className="display" style={{ fontStyle: "italic", fontSize: "1.02rem", color: G.ink, margin: "0 0 0.5rem", lineHeight: 1.75 }}>"{DAILY_VERSE.text}"</p>
-                <p style={{ fontSize: "0.72rem", fontWeight: 700, color: G.green, margin: "0 0 0.85rem" }}>— {DAILY_VERSE.ref}</p>
-                {!verseRead ? (
-                  <button onClick={() => setVerseRead(true)} style={{ fontSize: "0.76rem", color: G.green, fontWeight: 600, background: "none", border: "none", cursor: "pointer", display: "flex", alignItems: "center", gap: "4px", padding: 0 }}>
-                    Read reflection <Chevron open={false} size={12} color={G.green} />
-                  </button>
-                ) : (
-                  <p style={{ fontSize: "0.82rem", lineHeight: 1.75, color: G.body, margin: "0.75rem 0 0", padding: "0.85rem", backgroundColor: G.greenLight, borderRadius: "8px", border: `1px solid ${G.greenBorder}` }}>
-                    {DAILY_VERSE.reflection}
-                  </p>
-                )}
-              </div>
-
-              {/* Today's schedule */}
-              <div style={{ backgroundColor: G.white, border: `1px solid ${G.border}`, borderRadius: "16px", padding: "1.4rem", boxShadow: "0 2px 8px rgba(0,0,0,0.04)" }}>
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "1rem" }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                    <div style={{ width: "30px", height: "30px", borderRadius: "8px", backgroundColor: G.blueLight, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                      <i className="ti ti-calendar-today" style={{ fontSize: "15px", color: G.blue }} aria-hidden="true" />
-                    </div>
-                    <span style={{ fontSize: "0.75rem", fontWeight: 700, color: G.ink }}>Today's Schedule</span>
-                  </div>
-                  <span style={{ fontSize: "0.7rem", color: G.green, fontWeight: 600 }}>Sunday</span>
-                </div>
-                {TODAY_SCHEDULE.slice(0, 4).map(s => (
-                  <div key={s.title} style={{ display: "flex", gap: "10px", alignItems: "center", padding: "0.5rem 0", borderBottom: `1px solid ${G.borderLight}` }}>
-                    <span style={{ fontSize: "0.7rem", fontWeight: 700, color: G.green, minWidth: "60px" }}>{s.time}</span>
-                    <span style={{ fontSize: "0.8rem", color: G.body, flex: 1, fontWeight: 500 }}>{s.title}</span>
-                    <span style={{ fontSize: "0.6rem", fontWeight: 700, color: s.badgeColor, backgroundColor: s.badgeColor + "15", padding: "2px 7px", borderRadius: "100px", flexShrink: 0 }}>{s.badge}</span>
-                  </div>
-                ))}
-                <p style={{ fontSize: "0.72rem", color: G.hint, marginTop: "0.65rem", textAlign: "center" }}>+{TODAY_SCHEDULE.length - 4} more events today</p>
-              </div>
-
-              {/* Quick stats */}
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(2,1fr)", gap: "0.85rem" }}>
-                {[
-                  { val: "40+", label: "Years of Ministry", icon: "ti-building-church" },
-                  { val: "1,200+", label: "Church Members", icon: "ti-users" },
-                  { val: "500+", label: "Families Served", icon: "ti-heart-handshake" },
-                  { val: "12", label: "Active Ministries", icon: "ti-star" },
-                ].map(s => (
-                  <div key={s.label} style={{ backgroundColor: G.white, border: `1px solid ${G.border}`, borderRadius: "12px", padding: "1.1rem 1rem", boxShadow: "0 1px 4px rgba(0,0,0,0.04)" }}>
-                    <i className={`ti ${s.icon}`} style={{ fontSize: "18px", color: G.green, display: "block", marginBottom: "6px" }} aria-hidden="true" />
-                    <p className="display" style={{ fontSize: "1.55rem", fontWeight: 700, color: G.green, margin: "0 0 2px", letterSpacing: "-0.03em" }}>{s.val}</p>
-                    <p style={{ fontSize: "0.7rem", color: G.muted, margin: 0 }}>{s.label}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
+            width: 7,
+            height: 7,
+            borderRadius: "50%",
+            backgroundColor: G.green,
+            animation: "pulse 2s infinite",
+          }} />
+          <span className="tag" style={{ margin: 0 }}>Live Sunday Services</span>
         </div>
-      </section>
+        
+        <p style={{
+          fontSize: "0.88rem",
+          color: G.muted,
+          fontWeight: 500,
+          margin: "0 0 0.4rem",
+          fontFamily: "'Inter', sans-serif",
+        }}>
+          Hello, we're
+        </p>
+        
+        <h1 style={{
+          fontFamily: "'Playfair Display', Georgia, serif",
+          fontSize: "clamp(2.2rem, 8vw, 4rem)",
+          fontWeight: 700,
+          lineHeight: 1.06,
+          color: G.ink,
+          marginBottom: "0.4rem",
+          letterSpacing: "-0.03em",
+        }}>
+          Garmadu Church
+        </h1>
+        
+        <h2 style={{
+          fontSize: "clamp(1rem, 4vw, 1.4rem)",
+          fontWeight: 400,
+          color: G.green,
+          margin: "0 0 1.5rem",
+          letterSpacing: "-0.01em",
+          fontFamily: "'Inter', sans-serif",
+        }}>
+          A place of <span style={{ fontWeight: 700 }}>Faith, Grace</span> and Community
+        </h2>
+        
+        <p style={{
+          fontSize: "0.93rem",
+          lineHeight: 1.9,
+          color: G.body,
+          maxWidth: "420px",
+          marginBottom: "2.25rem",
+          fontFamily: "'Inter', sans-serif",
+        }}>
+          We craft <span style={{ color: G.green, fontWeight: 600 }}>spiritual experiences</span> rooted in scripture.
+          A church family called to love God and serve one another — no matter where you come from.
+        </p>
+        
+        <div style={{
+          display: "flex",
+          gap: "0.85rem",
+          marginBottom: "2.75rem",
+          flexWrap: "wrap",
+        }}>
+          <button
+            className="btn-green"
+            onClick={(e) => {
+              addSparkle(e);
+              showToast("Welcome! We'd love to see you this Sunday ✨");
+            }}
+            style={{
+              position: "relative",
+              overflow: "hidden",
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "8px",
+              backgroundColor: G.green,
+              color: "#fff",
+              padding: "0.82rem 1.9rem",
+              borderRadius: "10px",
+              fontSize: "0.87rem",
+              fontWeight: 700,
+              border: "none",
+              cursor: "pointer",
+              fontFamily: "'Inter', sans-serif",
+              boxShadow: "0 2px 8px rgba(22,163,74,0.25)",
+              transition: "transform 0.15s, box-shadow 0.15s",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = "translateY(-2px)";
+              e.currentTarget.style.boxShadow = "0 4px 16px rgba(22,163,74,0.35)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = "translateY(0)";
+              e.currentTarget.style.boxShadow = "0 2px 8px rgba(22,163,74,0.25)";
+            }}
+          >
+            {sparkles.map(s => (
+              <Sparkle key={s.id} style={{ left: s.x, top: s.y, color: s.color }} />
+            ))}
+            Plan Your Visit
+            <i className="ti ti-arrow-right" style={{ fontSize: "14px" }} aria-hidden="true" />
+          </button>
+          
+          <button
+            className="btn-outline"
+            onClick={() => setPage("blog")}
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "7px",
+              border: `1.5px solid ${G.border}`,
+              color: G.ink,
+              padding: "0.82rem 1.9rem",
+              borderRadius: "10px",
+              fontSize: "0.87rem",
+              fontWeight: 600,
+              background: "transparent",
+              cursor: "pointer",
+              fontFamily: "'Inter', sans-serif",
+              transition: "border-color 0.15s, transform 0.15s",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.borderColor = G.green;
+              e.currentTarget.style.transform = "translateY(-2px)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.borderColor = G.border;
+              e.currentTarget.style.transform = "translateY(0)";
+            }}
+          >
+            <i className="ti ti-book" style={{ fontSize: "14px" }} aria-hidden="true" />
+            Read Blog
+          </button>
+        </div>
+        
+        <div className="hero-stats-row" style={{
+          paddingTop: "1.75rem",
+          borderTop: `1px solid ${G.border}`,
+          display: "flex",
+          gap: "2.5rem",
+          flexWrap: "wrap",
+        }}>
+          {[
+            { label: "Sunday Services", val: "9 AM & 11 AM" },
+            { label: "Bible Study", val: "Wed 7 PM" },
+            { label: "Location", val: "Grace Ave" },
+          ].map(s => (
+            <div key={s.label}>
+              <p className="tag" style={{
+                margin: "0 0 4px",
+                fontSize: "0.62rem",
+                letterSpacing: "0.18em",
+                textTransform: "uppercase",
+                fontWeight: 700,
+                color: G.green,
+              }}>
+                {s.label}
+              </p>
+              <p style={{
+                fontSize: "0.86rem",
+                color: G.body,
+                fontWeight: 600,
+                margin: 0,
+                fontFamily: "'Inter', sans-serif",
+              }}>
+                {s.val}
+              </p>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Right widgets */}
+      <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+        {/* Verse of the day */}
+        <div style={{
+          backgroundColor: G.white,
+          border: `1px solid ${G.greenBorder}`,
+          borderRadius: "16px",
+          padding: "1.5rem",
+          boxShadow: "0 4px 20px rgba(22,163,74,0.08)",
+          position: "relative",
+          overflow: "hidden",
+        }}>
+          <div style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            height: "3px",
+            background: `linear-gradient(90deg, ${G.green}, ${G.greenMid}, ${G.gold})`,
+            borderRadius: "16px 16px 0 0",
+          }} />
+          
+          <div style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            marginBottom: "1rem",
+          }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+              <div style={{
+                width: "30px",
+                height: "30px",
+                borderRadius: "8px",
+                backgroundColor: G.greenLight,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}>
+                <i className="ti ti-book-2" style={{ fontSize: "15px", color: G.green }} aria-hidden="true" />
+              </div>
+              <span style={{
+                fontSize: "0.7rem",
+                fontWeight: 700,
+                color: G.greenText,
+                textTransform: "uppercase",
+                letterSpacing: "0.12em",
+                fontFamily: "'Inter', sans-serif",
+              }}>
+                Verse of the Day
+              </span>
+            </div>
+            <span style={{
+              fontSize: "0.7rem",
+              color: G.hint,
+              fontFamily: "'Inter', sans-serif",
+            }}>
+              June 21
+            </span>
+          </div>
+          
+          <p style={{
+            fontFamily: "'Playfair Display', Georgia, serif",
+            fontStyle: "italic",
+            fontSize: "1.02rem",
+            color: G.ink,
+            margin: "0 0 0.5rem",
+            lineHeight: 1.75,
+          }}>
+            "{DAILY_VERSE.text}"
+          </p>
+          
+          <p style={{
+            fontSize: "0.72rem",
+            fontWeight: 700,
+            color: G.green,
+            margin: "0 0 0.85rem",
+            fontFamily: "'Inter', sans-serif",
+          }}>
+            — {DAILY_VERSE.ref}
+          </p>
+          
+          {!verseRead ? (
+            <button
+              onClick={() => setVerseRead(true)}
+              style={{
+                fontSize: "0.76rem",
+                color: G.green,
+                fontWeight: 600,
+                background: "none",
+                border: "none",
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                gap: "4px",
+                padding: 0,
+                fontFamily: "'Inter', sans-serif",
+              }}
+            >
+              Read reflection <Chevron open={false} size={12} color={G.green} />
+            </button>
+          ) : (
+            <p style={{
+              fontSize: "0.82rem",
+              lineHeight: 1.75,
+              color: G.body,
+              margin: "0.75rem 0 0",
+              padding: "0.85rem",
+              backgroundColor: G.greenLight,
+              borderRadius: "8px",
+              border: `1px solid ${G.greenBorder}`,
+              fontFamily: "'Inter', sans-serif",
+            }}>
+              {DAILY_VERSE.reflection}
+            </p>
+          )}
+        </div>
+
+        {/* Today's schedule */}
+        <div style={{
+          backgroundColor: G.white,
+          border: `1px solid ${G.border}`,
+          borderRadius: "16px",
+          padding: "1.4rem",
+          boxShadow: "0 2px 8px rgba(0,0,0,0.04)",
+        }}>
+          <div style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            marginBottom: "1rem",
+          }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+              <div style={{
+                width: "30px",
+                height: "30px",
+                borderRadius: "8px",
+                backgroundColor: G.blueLight,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}>
+                <i className="ti ti-calendar-today" style={{ fontSize: "15px", color: G.blue }} aria-hidden="true" />
+              </div>
+              <span style={{
+                fontSize: "0.75rem",
+                fontWeight: 700,
+                color: G.ink,
+                fontFamily: "'Inter', sans-serif",
+              }}>
+                Today's Schedule
+              </span>
+            </div>
+            <span style={{
+              fontSize: "0.7rem",
+              color: G.green,
+              fontWeight: 600,
+              backgroundColor: G.greenLight,
+              padding: "3px 10px",
+              borderRadius: "100px",
+              border: `1px solid ${G.greenBorder}`,
+              fontFamily: "'Inter', sans-serif",
+            }}>
+              Sunday
+            </span>
+          </div>
+          
+          {TODAY_SCHEDULE.slice(0, 4).map((s, index) => (
+            <div
+              key={s.title}
+              style={{
+                display: "flex",
+                gap: "10px",
+                alignItems: "center",
+                padding: "0.5rem 0",
+                borderBottom: index < 3 ? `1px solid ${G.borderLight}` : "none",
+              }}
+            >
+              <span style={{
+                fontSize: "0.7rem",
+                fontWeight: 700,
+                color: G.green,
+                minWidth: "60px",
+                fontFamily: "'Inter', sans-serif",
+              }}>
+                {s.time}
+              </span>
+              <span style={{
+                fontSize: "0.8rem",
+                color: G.body,
+                flex: 1,
+                fontWeight: 500,
+                fontFamily: "'Inter', sans-serif",
+              }}>
+                {s.title}
+              </span>
+              <span style={{
+                fontSize: "0.6rem",
+                fontWeight: 700,
+                color: s.badgeColor,
+                backgroundColor: s.badgeColor + "15",
+                padding: "2px 7px",
+                borderRadius: "100px",
+                flexShrink: 0,
+                fontFamily: "'Inter', sans-serif",
+              }}>
+                {s.badge}
+              </span>
+            </div>
+          ))}
+          
+          <p style={{
+            fontSize: "0.72rem",
+            color: G.hint,
+            marginTop: "0.65rem",
+            textAlign: "center",
+            fontFamily: "'Inter', sans-serif",
+          }}>
+            +{TODAY_SCHEDULE.length - 4} more events today
+          </p>
+        </div>
+
+        {/* Quick stats */}
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "0.85rem" }}>
+          {[
+            { val: "40+", label: "Years of Ministry", icon: "ti-building-church" },
+            { val: "1,200+", label: "Church Members", icon: "ti-users" },
+            { val: "500+", label: "Families Served", icon: "ti-heart-handshake" },
+            { val: "12", label: "Active Ministries", icon: "ti-star" },
+          ].map(s => (
+            <div
+              key={s.label}
+              style={{
+                backgroundColor: G.white,
+                border: `1px solid ${G.border}`,
+                borderRadius: "12px",
+                padding: "1.1rem 1rem",
+                boxShadow: "0 1px 4px rgba(0,0,0,0.04)",
+                transition: "transform 0.15s, box-shadow 0.15s",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = "translateY(-2px)";
+                e.currentTarget.style.boxShadow = "0 4px 12px rgba(0,0,0,0.08)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = "translateY(0)";
+                e.currentTarget.style.boxShadow = "0 1px 4px rgba(0,0,0,0.04)";
+              }}
+            >
+              <i className={`ti ${s.icon}`} style={{
+                fontSize: "18px",
+                color: G.green,
+                display: "block",
+                marginBottom: "6px",
+              }} aria-hidden="true" />
+              <p className="display" style={{
+                fontSize: "1.55rem",
+                fontWeight: 700,
+                color: G.green,
+                margin: "0 0 2px",
+                letterSpacing: "-0.03em",
+                fontFamily: "'Playfair Display', Georgia, serif",
+              }}>
+                {s.val}
+              </p>
+              <p style={{
+                fontSize: "0.7rem",
+                color: G.muted,
+                margin: 0,
+                fontFamily: "'Inter', sans-serif",
+              }}>
+                {s.label}
+              </p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
 
       {/* ── PROGRAMS ── */}
       <section style={{ backgroundColor: G.surface, padding: "6rem 2.5rem", borderTop: `1px solid ${G.border}` }}>

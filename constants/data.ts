@@ -37,7 +37,7 @@ export const DAILY_VERSE = {
 };
 
 export const DAILY_REMINDER = {
-  title: "",
+  title: "Wednesday Bible Study Tonight",
   body: "Join us at 7:00 PM in the Main Hall. Elder Boateng continues our series through the book of Romans. Bring your Bible and a friend!",
   time: "7:00 PM · Main Hall",
 };
@@ -456,6 +456,16 @@ export const NAV_LINKS = [
   "Contact",
 ];
 
+// Clerk Authentication (replacing old credentials)
+export const CLERK_CONFIG = {
+  publishableKey: process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY || "",
+  afterSignInUrl: "/",
+  afterSignUpUrl: "/",
+  signInUrl: "/sign-in",
+  signUpUrl: "/sign-up",
+};
+
+// Legacy credentials (kept for backward compatibility, can be removed)
 export const ADMIN_CREDENTIALS = {
   email: "admin@garmadu.org",
   password: "admin123",
